@@ -1,8 +1,9 @@
-# cd "C:\Users\RICHA MISHRA\GURUKUL\python\my-python-project\src"
+# cd "C:\Users\RICHA MISHRA\GURUKUL\python\WhatsappChatAnalyzer\src"
 
 import streamlit as st
 import preprocess,helper
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.sidebar.title("Whatsapp Chat Analyzer")
 uploaded_file = st.sidebar.file_uploader("Choose a file")
@@ -61,7 +62,7 @@ if uploaded_file is not None:
 
         # activity map
         st.title('Activity Map')
-        col1,col2=st.beta_columns(2)
+        col1,col2=st.columns(2)
 
         with col1:
             st.header("Most busy day")
@@ -69,6 +70,21 @@ if uploaded_file is not None:
             fig,ax=plt.subplots()
             ax.bar(busy_day.index,busy_day.values)
             st.pyplot(fig)
+
+        with col2:
+            st.header("Most Busy Month")
+            busy_month = helper.month_activity_map(selected_user,df)
+            fig,ax=plt.subplots()
+            ax.bar(busy_month.index,busy_month.values,color='orange')
+            plt.xticks(rotation='vertical')
+            st.pyplot(fig)
+
+        # weekly activity map
+        st.title("Weekly Activity Map")
+        user_heatmap = helper.activity_heatmap(selected_user,df)
+        fig,ax=plt.subplots()
+        ax = sns.heatmap(user_heatmap)
+        st.pyplot(fig)
 
         # find the busiest users in the group
         if selected_user == 'Overall':
@@ -85,18 +101,20 @@ if uploaded_file is not None:
                 st.dataframe(n_df)
 
         # wordcloud
+        st.title("Word Cloud")
+        
         df_wc = helper.create_wordcloud(selected_user,df)
         fig,ax=plt.subplots()
         ax.imshow(df_wc)
         st.pyplot(fig)
 
         # most common words
-
+        st.title('Most Common Words')
         most_common_df = helper.most_common_words(selected_user, df)
         # st.dataframe(most_common_df)
 
         fig, ax = plt.subplots()
         ax.barh(most_common_df[0],most_common_df[1])
         plt.xticks(rotation='vertical')
-        st.title("Most Common Words")
         st.pyplot(fig)
+ 
